@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "resources": {
+      "../vendor/models/ggml-small.en-q5_1.bin": "models/ggml-small.en-q5_1.bin",
+      "../vendor/pdfium/win-x64/bin/pdfium.dll": "pdfium/pdfium.dll"
+    },
+    "windows": { "webviewInstallMode": { "type": "downloadBootstrapper" } }
+  }
+}

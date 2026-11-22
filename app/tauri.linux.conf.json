@@ -1,0 +1,8 @@
+{
+  "bundle": {
+    "resources": {
+      "../vendor/models/ggml-small.en-q5_1.bin": "models/ggml-small.en-q5_1.bin",
+      "../vendor/pdfium/linux-x64/lib/libpdfium.so": "pdfium/libpdfium.so"
+    }
+  }
+}

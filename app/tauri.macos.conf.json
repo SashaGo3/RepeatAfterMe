@@ -1,0 +1,32 @@
+{
+  "bundle": {
+    "resources": {
+      "../vendor/models/ggml-small.en-q5_1.bin": "models/ggml-small.en-q5_1.bin"
+    },
+    "macOS": {
+      "signingIdentity": "-",
+      "hardenedRuntime": false,
+      "frameworks": [
+        "../vendor/pdfium/mac/libpdfium.dylib"
+      ]
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Repeat After Me",
+        "width": 1200,
+        "height": 820,
+        "minWidth": 420,
+        "minHeight": 560,
+        "dragDropEnabled": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": {
+          "x": 30,
+          "y": 40
+        }
+      }
+    ]
+  }
+}

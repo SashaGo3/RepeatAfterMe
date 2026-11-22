@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f3a8f"/>
+      <stop offset="1" stop-color="#1b2160"/>
+    </linearGradient>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)" filter="url(#sh)"/>
+  <!-- the teacher: amber waveform -->
+  <g stroke="#ffb547" stroke-width="34" stroke-linecap="round">
+    <line x1="250" y1="420" x2="250" y2="380"/>
+    <line x1="315" y1="460" x2="315" y2="340"/>
+    <line x1="380" y1="500" x2="380" y2="300"/>
+    <line x1="445" y1="450" x2="445" y2="350"/>
+    <line x1="510" y1="480" x2="510" y2="320"/>
+    <line x1="575" y1="430" x2="575" y2="370"/>
+  </g>
+  <!-- you: green waveform -->
+  <g stroke="#5fe0a0" stroke-width="34" stroke-linecap="round">
+    <line x1="449" y1="664" x2="449" y2="624"/>
+    <line x1="514" y1="704" x2="514" y2="584"/>
+    <line x1="579" y1="744" x2="579" y2="544"/>
+    <line x1="644" y1="694" x2="644" y2="594"/>
+    <line x1="709" y1="724" x2="709" y2="564"/>
+    <line x1="774" y1="674" x2="774" y2="614"/>
+  </g>
+  <!-- repeat arrow from the teacher to you -->
+  <path d="M 680 330 C 790 330 800 440 760 490" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="30" stroke-linecap="round"/>
+  <path d="M 722 470 L 762 512 L 800 462" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

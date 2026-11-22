@@ -1,0 +1,19 @@
+[package]
+name = "repeat-after-me"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "Repeat after the teacher, hear yourself, decide."
+
+[build-dependencies]
+tauri-build = { version = "2.7.6", features = [] }
+
+[dependencies]
+env_logger = "0.11.12"
+log = "0.4.35"
+ram-core = { path = "../core" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+tauri = { version = "2.12.7", features = [] }
+tauri-plugin-dialog = "2.8.4"
+tauri-plugin-opener = "2.7.3"

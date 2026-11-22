@@ -1,0 +1,30 @@
+# build output
+/target/
+/ui/node_modules/
+/ui/dist/
+/app/gen/
+
+# downloaded by scripts/fetch-vendor.sh (large binaries)
+/vendor/
+
+# sample lesson for the UI mock: course material, stays local
+/ui/dev/
+
+# personal data from the old app: progress, voice recordings, caches
+/cache/
+/recordings/
+/progress.json
+/build/
+/dist/
+__pycache__/
+/.ruff_cache/
+
+# never commit credentials
+.env
+.env.*
+*.p12
+*.pem
+*.key
+*.mobileprovision
+
+.DS_Store
