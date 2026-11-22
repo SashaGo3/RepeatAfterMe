@@ -4,7 +4,7 @@
   import { revealItemInDir } from "@tauri-apps/plugin-opener";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { api, type LessonInfo, type LessonView, type Settings as SettingsT, type Snapshot } from "./lib/api";
-  import { capText, keyOf, match, type Action } from "./lib/keys";
+  import { capText, keyOf, layerKey, match, type Action } from "./lib/keys";
   import PdfView from "./components/PdfView.svelte";
   import PracticePanel from "./components/PracticePanel.svelte";
   import LessonDrawer from "./components/LessonDrawer.svelte";
@@ -221,6 +221,12 @@
       e.preventDefault();
       return;
     }
+    // onboarding and the add sheet take their keys first
+    if (layerKey(e)) {
+      e.preventDefault();
+      return;
+    }
+    if (addOpen) return; // no lesson keys behind the sheet
     const k = match(e);
     if (!k) return;
     e.preventDefault(); // Space must never scroll or press a focused button
@@ -428,9 +434,9 @@
   {/if}
   {#if addOpen}
     <div class="backdrop" onclick={() => (addOpen = false)} role="presentation"></div>
-    <div class="sheet card" role="dialog" aria-modal="true" aria-label="Add a lesson">
+    <div class="sheet card" role="dialog" aria-modal="true" aria-label="Add lessons">
       <div class="sheet-head">
-        <h2>Add a lesson</h2>
+        <h2>Add lessons</h2>
         <button class="btn round" onclick={() => (addOpen = false)} aria-label="Close">✕</button>
       </div>
       <AddLesson onAdd={(p) => { addOpen = false; addPaths(p); }} onFolder={() => { addOpen = false; addFolder(); }} {dropped} />

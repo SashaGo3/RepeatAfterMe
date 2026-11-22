@@ -80,3 +80,33 @@ export function spaceLabel(s: Snapshot | null): string {
     case "decide": return s.hasTake ? "Hear both again" : "Try";
   }
 }
+
+/** A screen on top (onboarding, the add sheet) takes keys first: it returns true for a key it used. */
+type Layer = (e: KeyboardEvent) => boolean;
+const layers: Layer[] = [];
+
+/** Use in onMount: `onMount(() => keyLayer(handler))`, which also removes it again. */
+export function keyLayer(h: Layer): () => void {
+  layers.push(h);
+  return () => {
+    const i = layers.indexOf(h);
+    if (i >= 0) layers.splice(i, 1);
+  };
+}
+
+/** The newest layer first. True when a layer used the key. */
+export function layerKey(e: KeyboardEvent): boolean {
+  if (e.metaKey || e.ctrlKey || e.altKey) return false;
+  for (let i = layers.length - 1; i >= 0; i--) if (layers[i](e)) return true;
+  return false;
+}
+
+/** Enter or Space on a focused button presses that button, as in any app. */
+export function pressFocused(e: KeyboardEvent): boolean {
+  const t = e.target as HTMLElement | null;
+  if ((e.key === "Enter" || e.key === " ") && t?.tagName === "BUTTON") {
+    (t as HTMLButtonElement).click();
+    return true;
+  }
+  return false;
+}

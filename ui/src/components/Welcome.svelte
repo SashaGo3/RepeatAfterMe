@@ -3,6 +3,7 @@
   import MicCheck from "./MicCheck.svelte";
   import AddLesson from "./AddLesson.svelte";
   import { api, type DeviceList, type Settings } from "../lib/api";
+  import { keyLayer, pressFocused } from "../lib/keys";
 
   let { settings, micLevel, onChange, onAdd, onFolder, dropped = null }: {
     settings: Settings | null;
@@ -17,8 +18,28 @@
   let step = $state(0);
   let devices = $state<DeviceList>({ inputs: [], outputs: [] });
 
+  const back = () => (step = Math.max(0, step - 1));
+  const next = () => (step = Math.min(STEPS.length - 1, step + 1));
+
   onMount(() => {
     api.devices().then((d) => (devices = d));
+    // ← → (and Enter) move between the steps; Space plays the test sound on the speakers step
+    return keyLayer((e) => {
+      if (pressFocused(e)) return true;
+      switch (e.key) {
+        case "ArrowRight":
+        case "Enter":
+          next();
+          return true;
+        case "ArrowLeft":
+          back();
+          return true;
+        case " ":
+          if (step === 2 && !e.repeat) api.testSound();
+          return true;
+      }
+      return false;
+    });
   });
 
   // the level meter runs only on the microphone step
@@ -92,6 +113,7 @@
         <button class="btn primary big" onclick={() => api.testSound()}>
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" /><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
           Play "Repeat after me"
+          <span class="kbd">Space</span>
         </button>
         {#if settings}
           <select class="field out" value={settings.output ?? ""} onchange={(e) => set({ output: (e.currentTarget as HTMLSelectElement).value || null })}>
@@ -101,16 +123,16 @@
         {/if}
         <p class="hint muted">Not hearing it? Pick the device you listen on and check its volume. Headphones work best: the microphone won't hear the teacher.</p>
       {:else}
-        <h1>Add a lesson</h1>
+        <h1>Add your lessons</h1>
         <p class="lead">A lesson is the teacher's <b>audio recording</b> and the <b>PDF</b> they read from.</p>
         <AddLesson {onAdd} {onFolder} {dropped} />
       {/if}
     </div>
 
     <div class="nav">
-      <button class="btn" onclick={() => (step = Math.max(0, step - 1))} disabled={step === 0}>Back</button>
+      <button class="btn" onclick={back} disabled={step === 0}><span class="kbd">←</span> Back</button>
       {#if step < STEPS.length - 1}
-        <button class="btn primary" onclick={() => (step += 1)}>{step === 0 ? "Let's set up" : "Next"}</button>
+        <button class="btn primary" onclick={next}>{step === 0 ? "Let's set up" : "Next"} <span class="kbd">→</span></button>
       {/if}
     </div>
   </div>
@@ -256,6 +278,10 @@
   .nav {
     display: flex;
     justify-content: space-between;
+  }
+  .nav .btn,
+  .big {
+    gap: 10px;
   }
   @media (max-width: 560px) {
     .box {
