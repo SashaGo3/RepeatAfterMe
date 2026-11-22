@@ -1,156 +1,180 @@
 # Repeat After Me
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-2B2B2E.svg)](LICENSE)
-![Platforms](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-2B2B2E.svg)
+![Platforms](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Windows-2B2B2E.svg)
+[![Latest release](https://img.shields.io/github/v/release/SashaGo3/RepeatAfterMe?color=2B2B2E)](https://github.com/SashaGo3/RepeatAfterMe/releases/latest)
+
+Practice pronunciation with the recordings and PDFs of your own course.
 
 ![Repeat After Me: a lesson's PDF with the words you got right underlined in green and words to work on marked in orange, next to the practice panel](docs/screenshot.png)
 
-Practise pronunciation with your course's recordings. Add a lesson (its audio and its PDF):
-the words light up in the PDF as the teacher says them. Then, phrase by phrase:
+## Features
 
-1. the teacher says it,
-2. you say it (the mic stops by itself when you stop talking),
-3. you hear **the teacher and then yourself**, back to back,
-4. **you decide**: <kbd>Enter</kbd> good, next phrase · <kbd>R</kbd> again.
+- The words light up in the PDF while the teacher speaks.
+- You practice one phrase at a time: listen, repeat, compare.
+- You hear the teacher and then yourself, back to back.
+- You decide if your take is good. The app does not grade you.
+- The app saves your progress for each lesson.
+- Everything runs on your computer. There is no account and no internet connection.
+- The app does not save your voice to disk.
 
-Nothing grades you. Your progress (which phrases you called good, how many tries) is saved per lesson.
-Everything runs on your computer: no account, no internet, your voice is never saved to disk.
+## How a practice turn works
 
-Windows, macOS and Linux. Installer ~200 MB, nothing else to download.
+1. The teacher says the phrase.
+2. You say the phrase. The microphone stops when you stop talking.
+3. You hear the teacher, then yourself.
+4. If your take is good, press <kbd>Enter</kbd>. The next phrase starts.
+5. If you want to try again, press <kbd>R</kbd>.
 
-## Download
+## Install
 
-**[Download the latest release](https://github.com/SashaGo3/RepeatAfterMe/releases/latest)**, pick the file for your system:
+Download the installer for your system from the
+**[latest release](https://github.com/SashaGo3/RepeatAfterMe/releases/latest)**.
 
-| | |
+| System | File |
 |---|---|
-| **macOS** (Apple Silicon and Intel, 11+) | `Repeat After Me_x.y.z_universal.dmg`, drag the app to Applications |
-| **Windows** 10/11 | `Repeat After Me_x.y.z_x64-setup.exe` (or the `.msi`) |
-| **Linux** | `.AppImage` (any distro), `.deb` (Ubuntu/Debian) or `.rpm` (Fedora) |
+| macOS 11 or later (Apple Silicon and Intel) | `Repeat.After.Me_<version>_universal.dmg` |
+| Windows 10 or 11 | `Repeat.After.Me_<version>_x64-setup.exe` |
 
-The first time it's your turn, your system asks for microphone access. Allow it.
+**macOS**
 
-The macOS app is signed with a Developer ID and notarized by Apple, so it opens like any other app.
-If Windows shows "Windows protected your PC", the Windows build is not signed with a paid certificate: click
-**More info → Run anyway**. Every installer is built from this source by
-[GitHub Actions](.github/workflows/release.yml).
+1. Open the `.dmg` file.
+2. Drag **Repeat After Me** to **Applications**.
+3. Open the app.
 
-## Using it
+The macOS app has a Developer ID signature and Apple notarized it. macOS opens it without a warning.
 
-To try it without your own course, add the [`samples/`](samples) folder: a short lesson on the TH sound
-(a PDF and a recording made for this project).
+**Windows**
 
+1. Open the setup file.
+2. If Windows shows "Windows protected your PC", click **More info**, then click **Run anyway**.
 
-**Add lessons:** drop a folder (or a `.zip` of one) on the window, or **File → Add a Folder of Lessons…** (<kbd>⌘/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>).
-Each recording is paired with the PDF of the same name in its folder, else the closest name
-("Light L **vs.** Dark L.m4a" ↔ "Light L **and** Dark L.pdf"), else the folder's only PDF. Wrong pair: **⋯ → Use a
-different PDF…** in the lesson list. Files stay where they are (a zip is unpacked into the app's data folder). Progress follows a lesson's *content*, so moving
-or renaming the files keeps it.
+The Windows installer does not have a paid code-signing certificate. This is why Windows shows the warning.
 
-The first time you open a lesson, the app listens to it once to find where each word is (about 1 s per 20 s of
-audio). After that it opens instantly.
+**All systems**
 
-### Keys
+The installer is approximately 200 MB. It contains the speech model, so you do not need other downloads.
+The first time that you practice, your system asks for access to the microphone. Allow the access.
 
-Every button shows its key. <kbd>?</kbd> lists them all.
+GitHub Actions builds every installer from this source code
+([`release.yml`](.github/workflows/release.yml)).
 
-| Key | |
+**Linux:** the code builds on Linux, but nobody tested the Linux app. To try it, [build it from source](#build-from-source).
+
+## Quick start
+
+1. Download the two files in [`samples/`](samples) into one folder. They are a short lesson about the TH sound.
+2. Open Repeat After Me.
+3. Drag the folder onto the window.
+4. Select the lesson in the lesson list.
+5. Press <kbd>Space</kbd> to start.
+
+## Add your lessons
+
+A lesson is one recording and one PDF.
+
+To add lessons, drag a folder (or a `.zip` file of a folder) onto the window.
+You can also select **File → Add a Folder of Lessons…** (<kbd>⌘/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>).
+
+The app pairs each recording with a PDF in the same folder. It uses the first match in this list:
+
+1. The PDF with the same name.
+2. The PDF with the closest name. For example, "Light L **vs.** Dark L.m4a" pairs with "Light L **and** Dark L.pdf".
+3. The only PDF in the folder.
+
+If the pair is wrong, click **⋯ → Use a different PDF…** in the lesson list.
+
+The app does not move your files. It unpacks a `.zip` file into its data folder.
+The app links your progress to the content of a lesson. If you move or rename the files, you keep your progress.
+
+The first time that you open a lesson, the app listens to the recording to find each word.
+This takes approximately 1 second for each 20 seconds of audio. After that, the lesson opens immediately.
+
+## Keyboard shortcuts
+
+Each button shows its key. Press <kbd>?</kbd> to see all keys.
+
+| Key | Action |
 |---|---|
-| <kbd>Space</kbd> | Start · skip to my turn · done talking · hear both again |
-| <kbd>Enter</kbd> | Good: next phrase |
+| <kbd>Space</kbd> | Start, skip to my turn, stop my turn, or hear both again |
+| <kbd>Enter</kbd> | Good: go to the next phrase |
 | <kbd>R</kbd> | Again |
-| <kbd>B</kbd> / <kbd>←</kbd> / <kbd>Esc</kbd> | Back: the previous phrase |
-| <kbd>N</kbd> / <kbd>→</kbd> | Next phrase |
-| <kbd>T</kbd> / <kbd>M</kbd> | Teacher only / my take only |
-| <kbd>F</kbd> / right-click a word | Mark the phrase's words for attention (orange); again to unmark |
-| <kbd>O</kbd> | Which phrases: all · to do (not called good yet) · marked |
-| <kbd>L</kbd> | Listen only: play the lesson through with highlighting, no turns |
+| <kbd>B</kbd> / <kbd>←</kbd> / <kbd>Esc</kbd> | Go to the previous phrase |
+| <kbd>N</kbd> / <kbd>→</kbd> | Go to the next phrase |
+| <kbd>T</kbd> / <kbd>M</kbd> | Play the teacher only / play my take only |
+| <kbd>F</kbd> / right-click a word | Mark the words of the phrase in orange. Press again to remove the mark. |
+| <kbd>O</kbd> | Show all phrases, the phrases to do, or the marked phrases |
+| <kbd>L</kbd> | Listen only: play the full lesson with highlights, without turns |
 | <kbd>S</kbd> | Stop |
-| click a word | Practise that phrase |
-| <kbd>⌘/Ctrl</kbd>+<kbd>L</kbd> | Lessons |
-| <kbd>⌘/Ctrl</kbd>+<kbd>+</kbd> <kbd>−</kbd> <kbd>0</kbd> | Zoom the PDF |
+| Click a word | Practice the phrase of this word |
+| <kbd>⌘/Ctrl</kbd>+<kbd>L</kbd> | Show the lessons |
+| <kbd>⌘/Ctrl</kbd>+<kbd>+</kbd> / <kbd>−</kbd> / <kbd>0</kbd> | Zoom the PDF |
 | <kbd>⌘/Ctrl</kbd>+<kbd>R</kbd> | Look for new lessons in your folders |
 
-To practise a lesson from scratch: **Start over** under the practice buttons, **⋯ → Start over…** in the lesson list,
-or **File → Start This Lesson Over…**. Every phrase goes back to not done; your marked words and time practised stay.
+## Progress and data
 
-The lesson list shows how long you've practised each lesson and when you last did; search it, or sort it by folder,
-recently practised, most practised or name. **⋯** on a folder renames it or takes it off the list; **⋯** on a lesson
-clears its marked words, picks another PDF or removes it. Lessons you add later to a folder you added are found when the
-app starts (or with **↻** / **File → Look for New Lessons**); ones you removed stay removed.
+**Start a lesson again.** Use one of these:
 
-**File → Back Up Progress…** saves all your progress in one file; **Restore Progress…** adds a backup to what's there
-(nothing is lost), also on another computer: lessons are known by their recording, wherever the files are.
+- **Start over** below the practice buttons.
+- **⋯ → Start over…** in the lesson list.
+- **File → Start This Lesson Over…**
 
-Your data (lesson list, progress, transcripts) is in the app's data folder: **File → Show Saved Progress**.
-**Settings → Progress** clears all progress (marked words stay), or resets the app to how it was the first time
-(your lesson files are never touched).
+All phrases go back to "not done". Your marked words and your practice time stay.
 
-## How it works
+**The lesson list** shows your practice time and the date of your last practice for each lesson.
+You can search the list. You can sort it by folder, recent practice, most practice, or name.
 
-One Rust library (`core/`) does everything; the window (`app/`, Tauri) and the screen (`ui/`, Svelte) only show
-its state and pass on what you press.
+- **⋯** on a folder: rename the folder, or remove it from the list.
+- **⋯** on a lesson: clear the marked words, select a different PDF, or remove the lesson.
 
-| | |
-|---|---|
-| Audio files | `symphonia` (mp3, m4a/AAC/ALAC, wav, flac, ogg) |
-| Where each word is | `whisper.cpp` *small.en* (190 MB, quantized), once per lesson, with the PDF's text as a hint; word times from cross-attention (DTW), trimmed to the actual speech |
-| Words ↔ PDF | in-order alignment, then the page's shape decides: grids read by column (a word goes on its column's row, even when misheard as another word in the grid), cells said together stay together ("that one", "the hour"), split words are joined ("all together" → altogether), sound-alikes, misheard words between two matches, stray matches pulled back next to their neighbours |
-| Phrases | a printed sentence is one phrase even with pauses in it; grid cells and items between `·` are separate |
-| PDF | `pdfium`: the words with their boxes, and the page images (one engine, so highlights sit exactly on the text) |
-| Speakers / mic | `cpal` (CoreAudio, WASAPI, ALSA/PulseAudio/PipeWire). Your turn ends after 0.8 s of silence; silence around your take is cut |
+When the app starts, it finds new lessons in the folders that you added.
+To look again, click **↻** or select **File → Look for New Lessons**. Lessons that you removed stay removed.
 
-## Building
+**Back up and restore**
 
-Needs Rust, Node 20+, CMake (for whisper.cpp) and, on Linux, `libwebkit2gtk-4.1-dev libasound2-dev`.
+- **File → Back Up Progress…** saves all your progress in one file.
+- **File → Restore Progress…** adds a backup to your current progress. It does not erase progress.
+  You can restore on a different computer, because the app identifies a lesson by its recording.
+
+**Your data.** The data folder holds the lesson list, your progress, and the transcripts.
+To open it, select **File → Show Saved Progress**.
+In **Settings → Progress**, you can clear all progress (marked words stay) or reset the app.
+These actions do not change your lesson files.
+
+## Build from source
+
+You need Rust, Node.js 20 or later, and CMake. On Linux, you also need `libwebkit2gtk-4.1-dev` and `libasound2-dev`.
 
 ```sh
-scripts/fetch-vendor.sh          # speech model + pdfium for this OS → vendor/ (once)
+scripts/fetch-vendor.sh                          # speech model + pdfium for this OS → vendor/ (once)
 npm --prefix ui ci
 cd app && ../ui/node_modules/.bin/tauri dev      # run
 cd app && ../ui/node_modules/.bin/tauri build    # installer for this OS
-cargo test -p ram-core           # tests (set RAM_PDFIUM_DIR=vendor/pdfium/mac-arm64/lib or similar)
+cargo test -p ram-core                           # tests (set RAM_PDFIUM_DIR=vendor/pdfium/mac-arm64/lib or similar)
 ```
 
-`scripts/build-app.sh` builds the app and installer for this computer, with no trace of who built it or where: the
-source paths that compilers keep for error messages are rewritten (this folder → `.`, your home → `~`), and it checks
-the result.
+`scripts/build-app.sh` builds an installer that does not contain your user name or your folder paths.
 
-The installers on the releases page are built by GitHub Actions on GitHub's machines from this source
-(`.github/workflows/release.yml`, on a `v*` tag). The macOS app is signed with a Developer ID and notarized there; local builds are signed ad hoc.
+To test a build without changes to your own progress, set a different data folder:
+`RAM_DATA_DIR=/tmp/ram-test <path to the app executable>`.
 
-Try a build without touching your own progress: `RAM_DATA_DIR=/tmp/ram-test <the app's executable>`.
-
-The UI can be worked on in a normal browser: `npm --prefix ui run dev` uses a mock backend
-(`ui/src/lib/mock.ts`, dev builds only) that replays a sample lesson from `ui/dev/`.
-
-Tools for checking the engine on real lessons (`core/examples/`):
-
-| | |
-|---|---|
-| `align_report <data dir> <out dir>` | every lesson in a data folder: printed words never heard, heard words not placed, matches nothing around backs up, and each spoken word → printed word. Run before and after a change to `align.rs` and `diff -r` the two folders (`RAM_ALIGN_BASELINE=1` turns the layout passes off, to see what they do) |
-| `align_check <pdf> <transcript.json>` | the phrases a transcript gives (`MAP=150-300`: what each word said between 150 s and 300 s went to) |
-| `transcribe_check <audio> <pdf> [reference.json]` | transcribe, then compare word times and phrases with a reference |
-| `engine_check <data dir> <course folder> <lesson>` | the whole engine on the real speakers (listen-only, no mic) |
-
-| Folder | |
-|---|---|
-| `core/src/align.rs` | transcript ↔ PDF, phrases |
-| `core/src/transcribe.rs` | whisper.cpp |
-| `core/src/session.rs` | the practice loop (tested on a fake clock) |
-| `core/src/engine.rs` | loading lessons, devices, progress, events |
-| `core/src/library.rs`, `progress.rs` | lesson list and pairing, progress file |
-| `core/src/pdf.rs`, `audio.rs`, `device.rs` | PDF, audio maths, speakers and mic |
-| `app/` | Tauri: commands, menu, `ram://` page images, bundling |
-| `ui/src/lib/keys.ts` | every shortcut (handler, labels, bar and help read it) |
+For the design of the app, the engine tools, and a map of the source code, read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Contributing
 
-Issues and pull requests are welcome: [CONTRIBUTING.md](CONTRIBUTING.md). Security reports:
-[SECURITY.md](SECURITY.md). If it helped your pronunciation, you can
-[buy me a coffee](https://buymeacoffee.com/sashago3).
+Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before you start.
+
+To report a security problem, read [SECURITY.md](SECURITY.md). Do not open a public issue for it.
+
+## Support
+
+Repeat After Me is free. If it helped your pronunciation, you can [buy me a coffee](https://buymeacoffee.com/sashago3).
 
 ## License
 
-[MIT](LICENSE). The installers also bundle the [whisper.cpp](https://github.com/ggml-org/whisper.cpp) *small.en*
-model (MIT) and [pdfium](https://pdfium.googlesource.com/pdfium/) (BSD-3-Clause / Apache-2.0).
+[MIT](LICENSE).
+
+The installers also contain:
+
+- The [whisper.cpp](https://github.com/ggml-org/whisper.cpp) *small.en* model (MIT).
+- [pdfium](https://pdfium.googlesource.com/pdfium/) (BSD-3-Clause / Apache-2.0).
