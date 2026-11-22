@@ -30,7 +30,7 @@ jobs:
         include:
           - os: macos-latest
             vendor: mac
-            args: --target universal-apple-darwin
+            args: --target universal-apple-darwin --config tauri.release.conf.json
           - os: windows-latest
             vendor: win-x64
             args: ""
@@ -62,7 +62,14 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # the macOS app is signed ad hoc (tauri.macos.conf.json), with no developer identity in it
+          # macOS: signed with a Developer ID and notarized by Apple, so it opens without a warning.
+          # Local builds (scripts/build-app.sh) stay ad hoc signed, see tauri.macos.conf.json.
+          APPLE_CERTIFICATE: ${{ matrix.os == 'macos-latest' && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ matrix.os == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          APPLE_SIGNING_IDENTITY: ${{ matrix.os == 'macos-latest' && secrets.APPLE_SIGNING_IDENTITY || '' }}
+          APPLE_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD: ${{ matrix.os == 'macos-latest' && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
         with:
           projectPath: app
           tauriScript: ../ui/node_modules/.bin/tauri

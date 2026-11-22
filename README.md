@@ -30,9 +30,9 @@ Windows, macOS and Linux. Installer ~200 MB, nothing else to download.
 
 The first time it's your turn, your system asks for microphone access. Allow it.
 
-If macOS says the app can't be opened, or Windows shows "Windows protected your PC": the build is not signed
-with a paid certificate. On macOS open **System Settings → Privacy & Security** and click **Open Anyway**; on
-Windows click **More info → Run anyway**. Every installer is built from this source by
+The macOS app is signed with a Developer ID and notarized by Apple, so it opens like any other app.
+If Windows shows "Windows protected your PC", the Windows build is not signed with a paid certificate: click
+**More info → Run anyway**. Every installer is built from this source by
 [GitHub Actions](.github/workflows/release.yml).
 
 ## Using it
@@ -117,7 +117,7 @@ source paths that compilers keep for error messages are rewritten (this folder �
 the result.
 
 The installers on the releases page are built by GitHub Actions on GitHub's machines from this source
-(`.github/workflows/release.yml`, on a `v*` tag). The macOS app is signed ad hoc, not with a developer identity.
+(`.github/workflows/release.yml`, on a `v*` tag). The macOS app is signed with a Developer ID and notarized there; local builds are signed ad hoc.
 
 Try a build without touching your own progress: `RAM_DATA_DIR=/tmp/ram-test <the app's executable>`.
 
