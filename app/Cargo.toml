@@ -1,6 +1,6 @@
 [package]
 name = "repeat-after-me"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2024"
 license = "MIT"
 description = "Repeat after the teacher, hear yourself, decide."
