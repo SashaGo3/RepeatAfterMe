@@ -78,6 +78,26 @@ jobs:
           tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
           releaseName: Repeat After Me ${{ github.ref_name }}
           releaseDraft: true
+      # tauri-action notarizes only the .app. Notarize the .dmg too, so macOS does not warn when it opens the download.
+      - name: Notarize the macOS .dmg
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          for dmg in target/universal-apple-darwin/release/bundle/dmg/*.dmg; do
+            xcrun notarytool submit "$dmg" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
+            xcrun stapler staple "$dmg"
+            if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+              # GitHub stores spaces in file names as dots; upload under that name to replace the file
+              named="$RUNNER_TEMP/$(basename "$dmg" | tr ' ' '.')"
+              cp "$dmg" "$named"
+              gh release upload "$GITHUB_REF_NAME" "$named" --clobber
+            fi
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.vendor }}
