@@ -381,6 +381,38 @@ fn match_out_of_order(t: &mut [SpokenWord], p: &mut [PdfWord]) {
         fill_in_reading_order(t, p);
     }
     one_word_for_two(t, p);
+    letters_as_words(t, p);
+}
+
+/// A lone letter ("C") is often the recogniser's spelling of a word that starts with the letter's name
+/// ("see" → seat). Once everything else is placed, it goes to a free printed word between its
+/// neighbours that starts with that sound (the one nearest the next word), unless it was matched to
+/// that very letter.
+fn letters_as_words(t: &mut [SpokenWord], p: &mut [PdfWord]) {
+    for i in 0..t.len() {
+        let Some(name) = letter_name(&t[i].n) else { continue };
+        if t[i].pdf >= 0 && p[t[i].pdf as usize].n == t[i].n {
+            continue;
+        }
+        let left = t[..i].iter().rev().find(|w| w.pdf >= 0).map_or(-1, |w| w.pdf as i64);
+        let right = t[i + 1..].iter().find(|w| w.pdf >= 0).map_or(p.len() as i64, |w| w.pdf as i64);
+        if right - left > 12 {
+            continue;
+        }
+        let key = sound_key(&name).chars().next();
+        let Some(j) = ((left + 1)..right)
+            .rev()
+            .map(|j| j as usize)
+            .find(|&j| p[j].tw < 0 && p[j].n.len() >= 3 && sound_key(&p[j].n).chars().next() == key)
+        else {
+            continue;
+        };
+        if t[i].pdf >= 0 {
+            p[t[i].pdf as usize].tw = -1;
+        }
+        t[i].pdf = j as i32;
+        p[j].tw = i as i32;
+    }
 }
 
 /// The consonants of a word with any vowels and with voiced/voiceless pairs merged: what's left of a
@@ -1011,7 +1043,7 @@ fn fill_gaps(t: &mut [SpokenWord], p: &mut [PdfWord]) {
         let ((i1, j1), (i2, j2)) = (win[0], win[1]);
         let us: Vec<usize> = ((i1 + 1)..i2).map(|i| i as usize).filter(|&i| t[i].pdf < 0).collect();
         let vs: Vec<usize> = ((j1 + 1)..j2).map(|j| j as usize).filter(|&j| p[j].tw < 0).collect();
-        if us.is_empty() || vs.is_empty() || us.len() > 2 * vs.len() || vs.len() > 2 * us.len() {
+        if us.is_empty() || vs.is_empty() || us.len() > 2 * vs.len() {
             continue;
         }
         // the very start and end are often the teacher talking: only fill them when they look alike
@@ -1024,15 +1056,26 @@ fn fill_gaps(t: &mut [SpokenWord], p: &mut [PdfWord]) {
                 _ => groups.push(vec![i]),
             }
         }
-        if groups.len() != vs.len() {
+        let alike = |g: &Vec<usize>, j: usize| sounds_alike(t, p, g, j);
+        // fewer words heard than printed (column headers, a word the recogniser lost): they go to the
+        // printed words at one end of the gap, when every one of them sounds alike
+        let vs: Vec<usize> = if groups.len() == vs.len() {
+            vs
+        } else if groups.len() < vs.len() {
+            let n = groups.len();
+            let fits = |w: &[usize]| groups.iter().zip(w).all(|(g, &j)| alike(g, j));
+            if fits(&vs[vs.len() - n..]) {
+                vs[vs.len() - n..].to_vec()
+            } else if fits(&vs[..n]) {
+                vs[..n].to_vec()
+            } else {
+                continue;
+            }
+        } else {
             continue;
-        }
+        };
         for (g, &j) in groups.iter().zip(&vs) {
-            let heard: String = g.iter().map(|&i| t[i].n.as_str()).collect();
-            let alike = heard.chars().next() == p[j].n.chars().next()
-                || sound_key(&heard).chars().next() == sound_key(&p[j].n).chars().next()
-                || distance(&heard, &p[j].n) <= 0.5;
-            if edge && !alike {
+            if edge && !sounds_alike(t, p, g, j) {
                 continue;
             }
             let span = t[*g.last().unwrap()].e - t[g[0]].s;
@@ -1044,6 +1087,29 @@ fn fill_gaps(t: &mut [SpokenWord], p: &mut [PdfWord]) {
             }
             p[j].tw = g[0] as i32;
         }
+    }
+}
+
+/// The words heard in `g` start like printed word `j` (a lone letter counts as its name).
+fn sounds_alike(t: &[SpokenWord], p: &[PdfWord], g: &[usize], j: usize) -> bool {
+    let heard: String = g.iter().map(|&i| t[i].n.as_str()).collect();
+    let heard = letter_name(&heard).unwrap_or(heard);
+    heard.chars().next() == p[j].n.chars().next()
+        || sound_key(&heard).chars().next() == sound_key(&p[j].n).chars().next()
+        || distance(&heard, &p[j].n) <= 0.5
+}
+
+/// A letter said on its own is heard as its name: "C" for "see" (or the start of "seat").
+fn letter_name(n: &str) -> Option<String> {
+    const NAMES: [&str; 26] = [
+        "ay", "bee", "see", "dee", "ee", "ef", "jee", "aych", "eye", "jay", "kay", "el", "em", "en", "oh", "pee", "cue",
+        "ar", "es", "tee", "you", "vee", "doubleyou", "ex", "why", "zee",
+    ];
+    let mut c = n.chars();
+    match (c.next(), c.next()) {
+        // "a" and "i" are words, not letters
+        (Some(l @ 'b'..='z'), None) if l != 'i' => Some(NAMES[(l as u8 - b'a') as usize].to_string()),
+        _ => None,
     }
 }
 
@@ -1267,6 +1333,26 @@ mod tests {
         let ph = build_phrases(&t, &p);
         assert_eq!(ph.len(), 7);
         assert_eq!(phrase_text(&ph[5], &t, &p), "Bean");
+    }
+
+    #[test]
+    fn a_letter_fills_its_cell_past_the_column_headers() {
+        // "EEE vs. IH" lesson: the grid's headers (EEE, IH) are printed, not said; "C" is Seat
+        let mut t = vec![
+            SpokenWord::new("E", 0.59, 0.78),
+            SpokenWord::new("vs.", 0.78, 1.32),
+            SpokenWord::new("IH", 1.32, 1.97),
+            SpokenWord::new("C", 3.33, 3.82),
+            SpokenWord::new("sit", 5.02, 5.5),
+            SpokenWord::new("bead", 7.29, 8.02),
+            SpokenWord::new("bit", 9.14, 9.46),
+        ];
+        let words = ["EEE", "vs.", "IH", "EEE", "IH", "seat", "sit", "beat", "bit"];
+        let chunks = [0, 0, 0, 1, 2, 3, 4, 5, 6];
+        let mut p: Vec<PdfWord> = words.iter().zip(chunks).map(|(x, c)| pw(x, c)).collect();
+        align_to_pdf(&mut t, &mut p);
+        let got: Vec<i32> = t.iter().map(|w| w.pdf).collect();
+        assert_eq!(&got[3..], &[5, 6, 7, 8], "C is seat, not a column header");
     }
 
     #[test]

@@ -21,7 +21,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 /// Bump when the transcript format or settings change: old caches are redone.
-const CACHE_VERSION: u32 = 4;
+const CACHE_VERSION: u32 = 5;
 
 pub struct Paths {
     pub data: PathBuf,

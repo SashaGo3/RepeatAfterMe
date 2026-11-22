@@ -195,10 +195,44 @@ pub fn transcribe(
     }
     let mut words = crate::align::merge_contractions(words);
     let islands = audio::speech_islands(&pcm, SAMPLE_RATE);
-    // a "word" with no sound under it is the recogniser filling a pause
-    words.retain(|w| islands.iter().any(|&(a, b)| a < w.e - 0.02 && b > w.s + 0.02));
+    settle_pause_words(&mut words, &islands);
     audio::snap_to_speech(&mut words, &islands);
     Ok(words)
+}
+
+/// A "word" with (almost) no sound under it and its end in a pause: whisper's timing of it is wrong.
+/// When the next stretch of speech is a sentence (two words or more), the word starts that sentence
+/// ("When" before "you leave the city"): it moves there. Otherwise it is the recogniser filling a pause
+/// in a word list ("seat … sit" heard twice): it goes.
+fn settle_pause_words(words: &mut Vec<SpokenWord>, islands: &[(f64, f64)]) {
+    let speech_under = |w: &SpokenWord| -> f64 { islands.iter().map(|&(a, b)| (b.min(w.e) - a.max(w.s)).max(0.0)).sum() };
+    let island_of_end = |e: f64| islands.iter().position(|&(a, b)| a <= e && e <= b + 0.05);
+    let mut keep = vec![true; words.len()];
+    for i in 0..words.len() {
+        let sp = speech_under(&words[i]);
+        if sp <= 0.04 {
+            keep[i] = false;
+            continue;
+        }
+        if island_of_end(words[i].e).is_some() || sp >= 0.1 {
+            continue;
+        }
+        // the next island and how many words end in it
+        let Some(k) = islands.iter().position(|&(a, _)| a >= words[i].e) else {
+            keep[i] = false;
+            continue;
+        };
+        let n = words[i + 1..].iter().filter(|w| island_of_end(w.e) == Some(k)).count();
+        if n >= 2 {
+            let a = islands[k].0;
+            words[i].s = a;
+            words[i].e = a + 0.05;
+        } else {
+            keep[i] = false;
+        }
+    }
+    let mut k = keep.into_iter();
+    words.retain(|_| k.next().unwrap());
 }
 
 /// The printed words as a prompt (whisper reads up to ~220 tokens of it). List numbers ("4.", "b)")
@@ -241,6 +275,38 @@ fn is_respelling(t: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    #[test]
+    fn a_word_filling_a_pause_in_a_word_list_goes() {
+        // "EEE vs. IH": whisper puts a second "sit" in the pause after the real one
+        let isl = [(3.33, 4.02), (5.02, 5.57), (7.29, 8.05)];
+        let mut w = vec![
+            SpokenWord::new("C", 3.16, 3.82),
+            SpokenWord::new("seat", 3.82, 5.5),
+            SpokenWord::new("sit", 5.5, 6.84),
+            SpokenWord::new("bead", 6.84, 8.02),
+        ];
+        settle_pause_words(&mut w, &isl);
+        let got: Vec<&str> = w.iter().map(|w| w.w.as_str()).collect();
+        assert_eq!(got, ["C", "seat", "bead"]);
+    }
+
+    #[test]
+    fn a_word_timed_too_early_moves_to_its_sentence() {
+        // "EEE vs. IH Sentences": "When" is timed in the pause before "you leave the city"
+        let isl = [(0.81, 3.07), (5.9, 7.05)];
+        let mut w = vec![
+            SpokenWord::new("Sentences", 1.22, 3.0),
+            SpokenWord::new("When", 3.0, 4.92),
+            SpokenWord::new("you", 4.92, 6.16),
+            SpokenWord::new("leave", 6.16, 6.38),
+            SpokenWord::new("the", 6.38, 6.58),
+        ];
+        settle_pause_words(&mut w, &isl);
+        assert_eq!(w.len(), 5);
+        assert_eq!((w[1].w.as_str(), w[1].s), ("When", 5.9));
+    }
+
     #[test]
     fn respellings() {
         for r in ["STAH-PUUSH-ing", "FEE-(y)uhl-LYK", "SUH-MOR", "duh-ZYN-NOHTS"] {
