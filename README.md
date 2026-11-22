@@ -59,7 +59,8 @@ The first time that you practice, your system asks for access to the microphone.
 GitHub Actions builds every installer from this source code
 ([`release.yml`](.github/workflows/release.yml)).
 
-**Linux:** the code builds on Linux, but nobody tested the Linux app. To try it, [build it from source](#build-from-source).
+**Linux:** the app supports Linux, but the releases do not contain a Linux installer at this time.
+To use the app on Linux, [build it from source](#build-from-source).
 
 ## Quick start
 

@@ -1,4 +1,4 @@
-# Builds the installers for macOS (universal .dmg), Windows (.msi + setup .exe) and Linux (.AppImage, .deb, .rpm).
+# Builds the installers for macOS (universal .dmg) and Windows (.msi + setup .exe). Linux: see the matrix below.
 # Push a tag like v1.0.0 to make a draft release; run it by hand to just get the files as artifacts.
 name: release
 on:
@@ -34,9 +34,10 @@ jobs:
           - os: windows-latest
             vendor: win-x64
             args: ""
-          - os: ubuntu-22.04
-            vendor: linux-x64
-            args: ""
+          # Linux is supported but not released for now. To ship .AppImage/.deb/.rpm again, uncomment:
+          # - os: ubuntu-22.04
+          #   vendor: linux-x64
+          #   args: ""
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
